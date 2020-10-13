@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.showcase.interview.msinventory.exception.CommitFailedException;
 import com.showcase.interview.msinventory.exception.DataNotFoundException;
 import com.showcase.interview.msinventory.exception.UndefinedException;
-import com.showcase.interview.msinventory.model.Order;
+import com.showcase.interview.msinventory.model.Inventory;
 import com.showcase.interview.msinventory.repository.InventoryRepository;
 import com.showcase.interview.msinventory.utils.SuccessTemplateMessage;
 import com.showcase.interview.msinventory.utils.Util;
@@ -22,11 +22,11 @@ public class InventoryService {
 	@Autowired
 	private Util util;
 
-	public Iterable<Order> getAll() {
+	public Iterable<Inventory> getAll() {
 		return inventoryRepository.findAll();
 	}
 
-	public Order createNew(Order newData) throws CommitFailedException, UndefinedException {
+	public Inventory createNew(Inventory newData) throws CommitFailedException, UndefinedException {
 		try {
 			newData.setCreated_at(util.getTimeNow());
 			newData.setUpdated_at(util.getTimeNow());
@@ -40,11 +40,11 @@ public class InventoryService {
 		}
 	}
 
-	public Order getById(long id) throws DataNotFoundException {
+	public Inventory getById(long id) throws DataNotFoundException {
 		return inventoryRepository.findById(id).orElseThrow(() -> new DataNotFoundException());
 	}
 
-	public Order updateById(Order updatedData, Long id) {
+	public Inventory updateById(Inventory updatedData, Long id) {
 
 		return inventoryRepository.findById(id).map(data -> {
 			updatedData.setId(id);
@@ -60,7 +60,7 @@ public class InventoryService {
 		});
 	}
 	
-	public Order reserveById(Order updatedData, Long id) {
+	public Inventory reserveById(Inventory updatedData, Long id) {
 
 		return inventoryRepository.findById(id).map(data -> {
 			int newQty = data.getQuantity()-updatedData.getQuantity();

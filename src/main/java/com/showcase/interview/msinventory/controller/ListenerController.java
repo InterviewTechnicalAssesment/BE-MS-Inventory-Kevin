@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.showcase.interview.msinventory.model.Order;
+import com.showcase.interview.msinventory.model.Inventory;
 
 @Component
 public class ListenerController {
@@ -19,7 +19,7 @@ public class ListenerController {
 	private InventoryController inventoryController;
 
 	@RabbitListener(queues = "ms-inventory-queue")
-	public void receiveMessage(Order newInventory) throws IOException {
+	public void receiveMessage(Inventory newInventory) throws IOException {
 		if (newInventory == null) {
 			throw new AmqpRejectAndDontRequeueException("Received message is null");
 		}

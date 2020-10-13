@@ -17,7 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import com.showcase.interview.msinventory.model.Order;
+import com.showcase.interview.msinventory.model.Inventory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class InventoryTest {
@@ -32,14 +32,14 @@ public class InventoryTest {
 	
 	@Test
 	public void formCustomerCRUDSeq() throws Exception {
-		Order baseInventory = new Order();
+		Inventory baseInventory = new Inventory();
 		baseInventory.setPrice(BigDecimal.valueOf(50000));
 		baseInventory.setCurrency("IDR");
 		baseInventory.setQuantity(999);
 		baseInventory.setProduct_name("Test Item");
 		
 //		Create Inventory
-		Order insertedInventory = createInventoryShouldSuccess(baseInventory);
+		Inventory insertedInventory = createInventoryShouldSuccess(baseInventory);
 		
 //		Read Inventory
 		queryShouldReturnSpecificInventory(insertedInventory, baseInventory.getProduct_name());
@@ -56,7 +56,7 @@ public class InventoryTest {
 		
 	}
 	
-	public Order createInventoryShouldSuccess(Order newInventory) throws Exception {
+	public Inventory createInventoryShouldSuccess(Inventory newInventory) throws Exception {
 
 		// create headers
 		HttpHeaders headers = new HttpHeaders();
@@ -66,29 +66,29 @@ public class InventoryTest {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
 		// build the request
-		HttpEntity<Order> entity = new HttpEntity<>(newInventory, headers);
+		HttpEntity<Inventory> entity = new HttpEntity<>(newInventory, headers);
 
 		// send POST request
-		Order newInvResult = this.restTemplate.postForObject("http://localhost:" + port + baseUrl + "create",
-				entity, Order.class);
+		Inventory newInvResult = this.restTemplate.postForObject("http://localhost:" + port + baseUrl + "create",
+				entity, Inventory.class);
 		assertThat(newInvResult).isEqualToIgnoringGivenFields(newInventory, "id", "created_at", "updated_at");
 		return newInvResult;
 
 	}
 	
-	public void queryShouldReturnSpecificInventory(Order form, String productName) throws Exception {
+	public void queryShouldReturnSpecificInventory(Inventory form, String productName) throws Exception {
 		assertThat(this.restTemplate.getForObject("http://localhost:" + port + baseUrl + form.getId() + "/detail",
 				String.class)).contains(productName);
 	}
 	
-	public void updateInventoryProductNameShouldSuccess(Order updatedInventory, Long insertedId) throws Exception {
+	public void updateInventoryProductNameShouldSuccess(Inventory updatedInventory, Long insertedId) throws Exception {
 		String url = "http://localhost:" + port + baseUrl + insertedId + "/update-data";
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(updatedInventory);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
 		assertThat(response.getBody()).contains(updatedInventory.getProduct_name());
 	}
 	
-	public void deleteInventoryShouldSuccess(Order inventory) throws Exception {
+	public void deleteInventoryShouldSuccess(Inventory inventory) throws Exception {
 
 		String url = "http://localhost:" + port + baseUrl + inventory.getId() + "/delete-data";
 		HttpEntity<?> requestEntity = null;
