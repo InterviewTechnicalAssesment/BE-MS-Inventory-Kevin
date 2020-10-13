@@ -16,16 +16,13 @@ public class Inventory extends BaseModel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(nullable = false)
 	private String product_name;
 
-	@Column(nullable = false)
 	private BigDecimal price;
 
 	@Column(nullable = false)
 	private int quantity;
 
-	@Column(nullable = false)
 	private String currency;
 
 	public Long getId() {

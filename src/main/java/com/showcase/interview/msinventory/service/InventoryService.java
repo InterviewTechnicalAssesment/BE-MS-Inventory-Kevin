@@ -59,6 +59,20 @@ public class InventoryService {
 			return inventoryRepository.save(updatedData);
 		});
 	}
+	
+	public Inventory reserveById(Inventory updatedData, Long id) {
+
+		return inventoryRepository.findById(id).map(data -> {
+			int newQty = data.getQuantity()-updatedData.getQuantity();
+			data.setQuantity(newQty);
+			data.setUpdated_at(util.getTimeNow());
+			return inventoryRepository.save(data);
+		}).orElseGet(() -> {
+			updatedData.setCreated_at(util.getTimeNow());
+			updatedData.setUpdated_at(util.getTimeNow());
+			return inventoryRepository.save(updatedData);
+		});
+	}
 
 	public ResponseEntity<Object> deleteById(long id) throws DataNotFoundException {
 

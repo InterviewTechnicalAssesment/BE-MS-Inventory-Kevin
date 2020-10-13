@@ -51,6 +51,11 @@ public class InventoryController {
 	public @ResponseBody Inventory updateData(@RequestBody Inventory newInventory, @PathVariable Long id) {
 		return inventoryService.updateById(newInventory, id);
 	}
+	
+	@PostMapping("/{id}/reserve-data")
+	public @ResponseBody Inventory reservedData(@RequestBody Inventory newInventory, @PathVariable Long id) {
+		return inventoryService.reserveById(newInventory, id);
+	}
 
 	@GetMapping("/all")
 	public @ResponseBody Iterable<Inventory> getAll() {
