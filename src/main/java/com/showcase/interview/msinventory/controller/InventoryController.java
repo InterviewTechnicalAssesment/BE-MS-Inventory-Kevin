@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.showcase.interview.msinventory.exception.CommitFailedException;
 import com.showcase.interview.msinventory.exception.DataNotFoundException;
 import com.showcase.interview.msinventory.exception.UndefinedException;
-import com.showcase.interview.msinventory.model.Inventory;
+import com.showcase.interview.msinventory.model.Order;
 import com.showcase.interview.msinventory.service.InventoryService;
 
 @Controller
@@ -28,7 +28,7 @@ public class InventoryController {
 	private InventoryService inventoryService;
 
 	@PostMapping("/create")
-	public @ResponseBody Inventory createNew(@RequestBody Inventory newInventory) {
+	public @ResponseBody Order createNew(@RequestBody Order newInventory) {
 		try {
 			return inventoryService.createNew(newInventory);
 		} catch (CommitFailedException e) {
@@ -39,7 +39,7 @@ public class InventoryController {
 	}
 
 	@GetMapping("/{id}/detail")
-	public @ResponseBody Inventory findById(@PathVariable Long id) {
+	public @ResponseBody Order findById(@PathVariable Long id) {
 		try {
 			return inventoryService.getById(id);
 		} catch (DataNotFoundException e) {
@@ -48,17 +48,17 @@ public class InventoryController {
 	}
 
 	@PutMapping("/{id}/update-data")
-	public @ResponseBody Inventory updateData(@RequestBody Inventory newInventory, @PathVariable Long id) {
+	public @ResponseBody Order updateData(@RequestBody Order newInventory, @PathVariable Long id) {
 		return inventoryService.updateById(newInventory, id);
 	}
 	
 	@PostMapping("/{id}/reserve-data")
-	public @ResponseBody Inventory reservedData(@RequestBody Inventory newInventory, @PathVariable Long id) {
+	public @ResponseBody Order reservedData(@RequestBody Order newInventory, @PathVariable Long id) {
 		return inventoryService.reserveById(newInventory, id);
 	}
 
 	@GetMapping("/all")
-	public @ResponseBody Iterable<Inventory> getAll() {
+	public @ResponseBody Iterable<Order> getAll() {
 		return inventoryService.getAll();
 
 	}

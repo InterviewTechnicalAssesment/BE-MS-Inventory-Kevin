@@ -1,0 +1,125 @@
+version: '3'
+services:
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+      
+  mysqldb-ms-inventory:
+    image: 'mysql:8.0'
+    container_name: mysqldb-ms-inventory
+    volumes:
+      - './sql_dump/ms_inventory/init.sql:/docker-entrypoint-initdb.d/0_init.sql'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ms-inventory
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=root
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-h'
+        - localhost
+      timeout: 20s
+      retries: 10
+      
+  ms-inventory:
+    image: 'akevintg/ms-inventory:latest'
+    container_name: ms-inventory
+    restart: on-failure
+    ports:
+      - '8001:8001'
+    environment:
+      - DB_URL=jdbc:mysql://mysqldb-ms-inventory:3306/ms-inventory?useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USERNAME=admin
+      - DB_PASSWORD=root
+      - QUEUE_NAME=ms-inventory-queue
+      - TOPIC_EXCHANGE=ms-inventory-exchange
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mysqldb-ms-inventory
+      - rabbitmq
+          
+  mysqldb-ms-payment:
+    image: 'mysql:8.0'
+    container_name: mysqldb-ms-payment
+    volumes:
+      - './sql_dump/ms_payment/init.sql:/docker-entrypoint-initdb.d/0_init.sql'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ms-payment
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=root
+    ports:
+      - '3307:3306'
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-h'
+        - localhost
+      timeout: 20s
+      retries: 10
+      
+  ms-payment:
+    image: 'akevintg/ms-payment:latest'
+    container_name: ms-payment
+    ports:
+      - '8002:8002'
+    restart: on-failure
+    environment:
+      - DB_URL=jdbc:mysql://mysqldb-ms-payment:3306/ms-payment?useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USERNAME=admin
+      - DB_PASSWORD=root
+      - QUEUE_NAME=ms-payment-queue
+      - TOPIC_EXCHANGE=ms-payment-exchange
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mysqldb-ms-payment
+      - rabbitmq
+          
+  mysqldb-ms-order:
+    image: 'mysql:8.0'
+    container_name: mysqldb-ms-order
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ms-order
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=root
+    volumes:
+      - './sql_dump/ms_order/init.sql:/docker-entrypoint-initdb.d/0_init.sql'
+    ports:
+      - '3308:3306'
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-h'
+        - localhost
+      timeout: 20s
+      retries: 10
+      
+  ms-order:
+    image: 'akevintg/ms-order:latest'
+    container_name: ms-order
+    ports:
+      - '8003:8003'
+    restart: on-failure
+    environment:
+      - DB_URL=jdbc:mysql://mysqldb-ms-order:3306/ms-order?useSSL=false&allowPublicKeyRetrieval=true
+      - DB_USERNAME=admin
+      - DB_PASSWORD=root
+      - QUEUE_NAME=ms-order-queue
+      - TOPIC_EXCHANGE=ms-order-exchange
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mysqldb-ms-order
+      - rabbitmq
