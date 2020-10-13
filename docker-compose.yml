@@ -120,6 +120,7 @@ services:
       - QUEUE_NAME=ms-order-queue
       - TOPIC_EXCHANGE=ms-order-exchange
       - SPRING_RABBITMQ_HOST=rabbitmq
+      - INVENTORY_URL=http://ms-inventory:8001/api/v1/ms-inventory/inventory/
     depends_on:
       - mysqldb-ms-order
       - rabbitmq
